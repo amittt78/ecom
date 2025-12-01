@@ -1,5 +1,6 @@
 package com.example.ecom.controller;
 
+import com.example.ecom.model.User;
 import com.example.ecom.model.product;
 import com.example.ecom.service.productService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,5 +84,41 @@ public class productController {
         }else{
             return  new ResponseEntity<>("failed",HttpStatus.BAD_REQUEST);
         }
+    }
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUser(){
+        return new ResponseEntity<>(service.getAllUser(),HttpStatus.OK);
+
+    }
+
+    @GetMapping("/users/{username}")
+    public ResponseEntity<User> getUser(@PathVariable String username){
+        User user=service.getUserByName(username);
+        if(user==null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(user,HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<?> addUser(@RequestBody User use){
+        try {
+            User savedUser = service.addUser(use);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody User use){
+        User use1=service.verifyUser(use.getUsername(),use.getPassword());
+        if(use1!=null){
+            return new ResponseEntity<>(use1,HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("User Not Existed",HttpStatus.OK);
+        }
+
     }
 }
